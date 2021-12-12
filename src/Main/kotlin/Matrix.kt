@@ -9,11 +9,15 @@ open class Matrix(input: Array<Array<Double>>) {
                 data[i][j] = input[i][j]
     }
 
-    private var rowsSize: Int = data.size
-    private var columsSize: Int = data[0].size
+    protected var rowsSize: Int = data.size
+    protected var columsSize: Int = data[0].size
 
     fun getDimension(): Pair<Int, Int> {
         return Pair(rowsSize, columsSize)
+    }
+
+    internal fun getData(): Array<Array<Double>> {
+        return data
     }
 
     //plus operator
