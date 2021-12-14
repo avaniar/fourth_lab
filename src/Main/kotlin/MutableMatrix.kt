@@ -7,60 +7,48 @@ class MutableMatrix(input: Array<Array<Double>>) : Matrix(input) {
             this.data[i][j] = value
     }
 
-    override operator fun plus(other: Matrix): MutableMatrix {
-        return MutableMatrix((Matrix(this.getData()) + other).getData())
-    }
-
-    override operator fun minus(other: Matrix): MutableMatrix {
-        return MutableMatrix((Matrix(this.getData()) - other).getData())
-    }
-
-    override operator fun times(other: Matrix): MutableMatrix {
-        return MutableMatrix((Matrix(this.getData()) * other).getData())
-    }
-
-    override operator fun times(scalar: Double): MutableMatrix {
-        return MutableMatrix((Matrix(this.getData()) * scalar).getData())
-    }
-
-    override operator fun div(scalar: Double): MutableMatrix {
-        return MutableMatrix((Matrix(this.getData()) / scalar).getData())
-    }
-
-    override operator fun unaryMinus(): MutableMatrix {
-        this *= -1.0
-        return this
-    }
-
-    override operator fun unaryPlus(): MutableMatrix {
-        return this
-    }
-
     operator fun plusAssign(other: Matrix) {
-        val tempMatrix = this + other
-        this.data = tempMatrix.getData()
+        if (this.rowsSize == other.rowsSize && this.columsSize == other.columsSize) {
+            for (i in 0 until this.rowsSize)
+                for (j in 0 until this.columsSize)
+                    this[i,j] += other[i,j]
+        } else
+            throw IllegalArgumentException("The addition operation cannot be used for matrices of different sizes")
     }
 
 
     operator fun minusAssign(other: Matrix) {
-        val tempMatrix = this - other
-        this.data = tempMatrix.getData()
+        if (this.rowsSize == other.rowsSize && this.columsSize == other.columsSize) {
+            for (i in 0 until this.rowsSize)
+                for (j in 0 until this.columsSize)
+                    this[i,j] -= other[i,j]
+        } else
+            throw IllegalArgumentException("The addition operation cannot be used for matrices of different sizes")
     }
 
     operator fun timesAssign(other: Matrix) {
-        val tempMatrix = this * other
-        this.data = tempMatrix.getData()
-        this.rowsSize = tempMatrix.getDimension().first
-        this.columsSize = tempMatrix.getDimension().second
+        if (this.columsSize == other.rowsSize) {
+            val tempMatrix = MutableMatrix(Array(this.rowsSize) { (Array(other.columsSize) { 0.0 }) })
+            for (i in 0 until this.rowsSize)
+                for (j in 0 until other.columsSize)
+                    for (k in 0 until this.columsSize)
+                        tempMatrix[i,j] += this[i,j] * other[i,j]
+            this.data = tempMatrix.data
+        } else
+            throw IllegalArgumentException("Matrices are not compatible.")
     }
 
     operator fun timesAssign(scalar: Double) {
-        val tempMatrix = this * scalar
-        this.data = tempMatrix.getData()
+        for (i in 0 until this.rowsSize)
+            for (j in 0 until this.columsSize)
+                this[i,j] *= scalar
     }
 
     operator fun divAssign(scalar: Double) {
-        val tempMatrix = this / scalar
-        this.data = tempMatrix.getData()
+        if (scalar == 0.0)
+            throw IllegalArgumentException("Division by zero")
+        for (i in 0 until this.rowsSize)
+            for (j in 0 until this.columsSize)
+                this[i,j] /= scalar
     }
 }
